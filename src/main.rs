@@ -1,25 +1,31 @@
-use rand::Rng;
-use std::cmp::Ordering;
 use std::io::stdin;
 
 fn main() {
-  println!("guess the number!");
-  let secret_number = rand::thread_rng().gen_range(1, 101);
+  println!("Convert cel <=> fah");
   loop {
-    println!("please input your guess:");
-    let mut guess = String::new();
-    stdin().read_line(&mut guess).expect("failed to read line");
-    let guess: u32 = match guess.trim().parse() {
+    println!("Input f{{number}} as fah => cel, or c{{number}} as cel => fah:");
+    let mut input = String::new();
+    stdin()
+      .read_line(&mut input)
+      .expect("[Error] Failed to readline");
+    let original_type = input.trim().chars().next().expect("original_type error");
+    let value = remove_first_char(&input.trim()).expect("value error");
+    let value: i32 = match value.parse() {
       Ok(num) => num,
       Err(_) => continue,
     };
-    match guess.cmp(&secret_number) {
-      Ordering::Less => println!("too small!"),
-      Ordering::Equal => {
-        println!("you win!");
-        break;
-      }
-      Ordering::Greater => println!("too big!"),
+    if original_type == 'c' {
+      let conv_value = value * 9 / 5 + 32;
+      println!("{}º cel is {}º fah", value, conv_value);
+    } else if original_type == 'f' {
+      let conv_value = (value - 32) * 5 / 9;
+      println!("{}º fah is {}º cel", value, conv_value);
+    } else {
+      println!("Only accepts c or f for the first char");
     }
   }
+}
+
+fn remove_first_char(s: &str) -> Option<&str> {
+  s.chars().next().map(|c| &s[c.len_utf8()..])
 }
